@@ -28,9 +28,10 @@
  */
 
 // fields
-$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsActive']  = array('Erweiterete Inserttags verwenden', 'Wenn Sie diese Option wählen, können Sie die erweiterten Inserttags verwenden, um gespeicherte Datem (im Backend-Modul "Formular-Daten") dieses Formulars auszulesen.');
-$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsKey']     = array('Inserttags Schlüssel', 'Wählen Sie einen Schlüssel, der in den Inserttags verwendet wird, um dieses Formular zu identifizieren.');
-$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsIdField'] = array('Feld mit der Datensatz ID', 'Wählen Sie das Feld des Formulars aus, dessen Wert verwendet werden soll, um einzelne Datensätze dieses Formulars zu ermitteln.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsActive']    = array('Erweiterete Inserttags verwenden', 'Wenn Sie diese Option wählen, können Sie die erweiterten Inserttags verwenden, um gespeicherte Datem (im Backend-Modul "Formular-Daten") dieses Formulars auszulesen.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsKey']       = array('Inserttags Schlüssel', 'Wählen Sie einen Schlüssel, der in den Inserttags verwendet wird, um dieses Formular zu identifizieren.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsIdField']   = array('Feld mit der Datensatz ID', 'Wählen Sie das Feld des Formulars aus, dessen Wert verwendet werden soll, um einzelne Datensätze dieses Formulars zu ermitteln.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsFormParam'] = array('Formularparametername', 'Wählen Sie den Namen des Formularparamter, der die Id enthält.');
 
 // legends
 $GLOBALS['TL_LANG']['tl_form']['extended_inserttags_legend'] = "(EFG) Erweiterete Inserttags";

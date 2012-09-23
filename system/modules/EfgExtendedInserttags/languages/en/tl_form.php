@@ -28,9 +28,10 @@
  */
 
 // fields
-$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsActive']  = array('Use extended insert tags', 'If you choose this option, extended insert tags could be used to get stored data (from database "Form data") of this form.');
-$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsKey']     = array('Insert tags key', 'Set the key, that will be used in the insert tags to identify this form.');
-$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsIdField'] = array('Field with record id', 'Select a field of this form, which value should be used to identify a unique data record of this form.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsActive']    = array('Use extended insert tags', 'If you choose this option, extended insert tags could be used to get stored data (from database "Form data") of this form.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsKey']       = array('Insert tags key', 'Set the key, that will be used in the insert tags to identify this form.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsIdField']   = array('Field with record id', 'Select a field of this form, which value should be used to identify a unique data record of this form.');
+$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsFormParam'] = array('Form parameter name', 'Select the name of the form parameter, that contains the id.');
 
 // legends
 $GLOBALS['TL_LANG']['tl_form']['extended_inserttags_legend'] = "(EFG) Extended insert tags";

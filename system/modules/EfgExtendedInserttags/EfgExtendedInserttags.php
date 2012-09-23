@@ -64,7 +64,7 @@ class EfgExtendedInserttags extends Controller
 					
 					if ($obForm->numRows > 0) {
 						$idField = $obForm->extendedInserttagsIdField;
-						$idValue = $this->Input->$method($idField);
+						$idValue = $this->Input->$method($obForm->extendedInserttagsFormParam);
 						
 						$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT fdd.pid FROM tl_formdata_details fdd JOIN tl_formdata fd ON fdd.pid = fd.id WHERE fdd.value = ? AND fdd.ff_name = ? AND fd.form = ?)")
 									   ->limit(1)

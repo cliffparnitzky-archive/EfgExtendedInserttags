@@ -56,6 +56,15 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['extendedInserttagsIdField'] = array
 	'eval'                    => array('mandatory'=>true, 'multiple'=>false, 'tl_class'=>'w50')
 );
 
+$GLOBALS['TL_DCA']['tl_form']['fields']['extendedInserttagsFormParam'] = array
+(
+	'label'                   => &$GLOBALS['TL_LANG']['tl_form']['extendedInserttagsFormParam'],
+	'exclude'                 => true,
+	'filter'                  => false,
+	'inputType'               => 'text',
+	'eval'                    => array('maxlength'=>20, 'mandatory'=>true, 'rgxp'=>'alpha', 'nospace'=>true, 'unique'=>true, 'tl_class'=>'w50')
+);
+
 // Palettes
 $GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'extendedInserttagsActive';
 
@@ -63,7 +72,7 @@ $GLOBALS['TL_DCA']['tl_form']['palettes']['default'] =  str_replace(array('{expe
 
 // Subpalettes
 array_insert($GLOBALS['TL_DCA']['tl_form']['subpalettes'], count($GLOBALS['TL_DCA']['tl_form']['subpalettes']),
-	array('extendedInserttagsActive' => 'extendedInserttagsKey,extendedInserttagsIdField')
+	array('extendedInserttagsActive' => 'extendedInserttagsKey,extendedInserttagsIdField,extendedInserttagsFormParam')
 );
 
 ?>
