@@ -66,10 +66,16 @@ class EfgExtendedInserttags extends Controller
 						$idField = $obForm->extendedInserttagsIdField;
 						$idValue = $this->Input->$method($obForm->extendedInserttagsFormParam);
 						
-						$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT fdd.pid FROM tl_formdata_details fdd JOIN tl_formdata fd ON fdd.pid = fd.id WHERE fdd.value = ? AND fdd.ff_name = ? AND fd.form = ?)")
-									   ->limit(1)
-									   ->execute(array($fieldname, $idValue, $idField, $obForm->title));
-						if ($obForm->numRows > 0) {
+						if ($idField == "id") {
+							$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = ?")
+											 ->limit(1)
+											 ->execute(array($fieldname, $idValue));
+						} else {
+							$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT fdd.pid FROM tl_formdata_details fdd JOIN tl_formdata fd ON fdd.pid = fd.id WHERE fdd.value = ? AND fdd.ff_name = ? AND fd.form = ?)")
+											 ->limit(1)
+											 ->execute(array($fieldname, $idValue, $idField, $obForm->title));
+						}
+						if ($obRecord->numRows > 0) {
 							$value = $obRecord->value;
 							
 							$dca = 'fd_' . str_replace('-', '_', standardize($obForm->title));
