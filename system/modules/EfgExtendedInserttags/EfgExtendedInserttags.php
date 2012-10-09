@@ -50,92 +50,85 @@ class EfgExtendedInserttags extends Controller
 	public function replaceEfgExtendedInserttags($strTag)
 	{
 		$strTag = explode('::', $strTag);
-		switch ($strTag[0])
-		{
-			case 'efgext':
-				if (count($strTag) == 4 && strlen($strTag[1]) > 0 && strlen($strTag[2]) > 0 && strlen($strTag[3]) > 0) {
-					$key = $strTag[1];
-					$method = strtolower($strTag[2]) == 'post' ? 'post' : 'get';
-					$fieldname = $strTag[3];
+		if ($strTag[0] == 'efgext' && count($strTag) == 4 && strlen($strTag[1]) > 0 && strlen($strTag[2]) > 0 && strlen($strTag[3]) > 0) {
+			$key = $strTag[1];
+			$method = strtolower($strTag[2]) == 'post' ? 'post' : 'get';
+			$fieldname = $strTag[3];
+			
+			$obForm = $this->Database->prepare("SELECT * FROM tl_form WHERE extendedInserttagsActive = ? AND extendedInserttagsKey = ?")
+							   ->limit(1)
+							   ->execute(array(1, $key));
+			
+			if ($obForm->numRows > 0) {
+				$idField = $obForm->extendedInserttagsIdField;
+				$idValue = $this->Input->$method($obForm->extendedInserttagsFormParam);
+				
+				if ($idField == "id") {
+					$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = ?")
+									 ->limit(1)
+									 ->execute(array($fieldname, $idValue));
+				} else {
+					$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT fdd.pid FROM tl_formdata_details fdd JOIN tl_formdata fd ON fdd.pid = fd.id WHERE fdd.value = ? AND fdd.ff_name = ? AND fd.form = ?)")
+									 ->limit(1)
+									 ->execute(array($fieldname, $idValue, $idField, $obForm->title));
+				}
+				if ($obRecord->numRows > 0) {
+					$value = $obRecord->value;
 					
-					$obForm = $this->Database->prepare("SELECT * FROM tl_form WHERE extendedInserttagsActive = ? AND extendedInserttagsKey = ?")
-									   ->limit(1)
-									   ->execute(array(1, $key));
+					$dca = 'fd_' . str_replace('-', '_', standardize($obForm->title));
 					
-					if ($obForm->numRows > 0) {
-						$idField = $obForm->extendedInserttagsIdField;
-						$idValue = $this->Input->$method($obForm->extendedInserttagsFormParam);
-						
-						if ($idField == "id") {
-							$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = ?")
-											 ->limit(1)
-											 ->execute(array($fieldname, $idValue));
-						} else {
-							$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT fdd.pid FROM tl_formdata_details fdd JOIN tl_formdata fd ON fdd.pid = fd.id WHERE fdd.value = ? AND fdd.ff_name = ? AND fd.form = ?)")
-											 ->limit(1)
-											 ->execute(array($fieldname, $idValue, $idField, $obForm->title));
+					if (strlen($obForm->formID)) {
+						$dca = 'fd_' . $obForm->formID;
+					}
+					
+					$this->loadDataContainer($dca);
+
+					if ($GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['inputType'] == 'password')
+					{
+						// do not allow extracting the password
+						return "";
+					}
+					
+
+					$value = deserialize($value);
+					$rgxp = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['eval']['rgxp'];
+					$opts = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['options'];
+					$rfrc = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['reference'];
+					$fkey = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['foreignKey'];
+
+					$returnValue = '';
+					if ($rgxp == 'date' || $rgxp == 'time' || $rgxp == 'datim')
+					{
+						$dateFormat = $GLOBALS['TL_CONFIG'][$rgxp . 'Format'];
+						// check if custom format was set
+						if (count($strTag) == 5 && strlen($strTag[4]) > 0) {
+							$dateFormat = $strTag[4];
 						}
-						if ($obRecord->numRows > 0) {
-							$value = $obRecord->value;
-							
-							$dca = 'fd_' . str_replace('-', '_', standardize($obForm->title));
-							
-							if (strlen($obForm->formID)) {
-								$dca = 'fd_' . $obForm->formID;
-							}
-							
-							$this->loadDataContainer($dca);
-
-							if ($GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['inputType'] == 'password')
-							{
-								// do not allow extracting the password
-								return "";
-							}
-							
-
-							$value = deserialize($value);
-							$rgxp = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['eval']['rgxp'];
-							$opts = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['options'];
-							$rfrc = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['reference'];
-							$fkey = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['foreignKey'];
-
-							$returnValue = '';
-							if ($rgxp == 'date' || $rgxp == 'time' || $rgxp == 'datim')
-							{
-								$dateFormat = $GLOBALS['TL_CONFIG'][$rgxp . 'Format'];
-								// check if custom format was set
-								if (count($strTag) == 5 && strlen($strTag[4]) > 0) {
-									$dateFormat = $strTag[4];
-								}
-								$returnValue = $this->parseDate($dateFormat, $value);
-							}
-							elseif (is_array($value))
-							{
-								$returnValue = implode(', ', $value);
-								if (strlen($fkey) > 0)
-								{
-									$returnValue = $this->getArrayValueAsList($fkey, $returnValue);
-								}
-							}
-							elseif (is_array($opts) && array_is_assoc($opts))
-							{
-								$returnValue = isset($opts[$value]) ? $opts[$value] : $value;
-							}
-							elseif (is_array($rfrc))
-							{
-								$returnValue = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
-							}
-							else
-							{
-								$returnValue = $value;
-							}
-
-							// Convert special characters (see #1890)
-							return specialchars($returnValue);
-
+						$returnValue = $this->parseDate($dateFormat, $value);
+					}
+					elseif (is_array($value))
+					{
+						$returnValue = implode(', ', $value);
+						if (strlen($fkey) > 0)
+						{
+							$returnValue = $this->getArrayValueAsList($fkey, $returnValue);
 						}
 					}
+					elseif (is_array($opts) && array_is_assoc($opts))
+					{
+						$returnValue = isset($opts[$value]) ? $opts[$value] : $value;
+					}
+					elseif (is_array($rfrc))
+					{
+						$returnValue = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
+					}
+					else
+					{
+						$returnValue = $value;
+					}
+					return $returnValue;
 				}
+			}
 		}
 		return false;
 	}
