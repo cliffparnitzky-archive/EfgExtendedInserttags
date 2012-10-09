@@ -56,8 +56,8 @@ class EfgExtendedInserttags extends Controller
 			$fieldname = $strTag[3];
 			
 			$obForm = $this->Database->prepare("SELECT * FROM tl_form WHERE extendedInserttagsActive = ? AND extendedInserttagsKey = ?")
-							   ->limit(1)
-							   ->execute(array(1, $key));
+							->limit(1)
+							->execute(array(1, $key));
 			
 			if ($obForm->numRows > 0) {
 				$idField = $obForm->extendedInserttagsIdField;
@@ -83,9 +83,8 @@ class EfgExtendedInserttags extends Controller
 					
 					$this->loadDataContainer($dca);
 
-					if ($GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['inputType'] == 'password')
-					{
-						// do not allow extracting the password
+					if ($GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['inputType'] == 'password') {
+						// do not allow extracting a password
 						return "";
 					}
 					
@@ -97,33 +96,24 @@ class EfgExtendedInserttags extends Controller
 					$fkey = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['foreignKey'];
 
 					$returnValue = '';
-					if ($rgxp == 'date' || $rgxp == 'time' || $rgxp == 'datim')
-					{
+					if ($rgxp == 'date' || $rgxp == 'time' || $rgxp == 'datim') {
 						$dateFormat = $GLOBALS['TL_CONFIG'][$rgxp . 'Format'];
 						// check if custom format was set
 						if (count($strTag) == 5 && strlen($strTag[4]) > 0) {
 							$dateFormat = $strTag[4];
 						}
 						$returnValue = $this->parseDate($dateFormat, $value);
-					}
-					elseif (is_array($value))
-					{
+					} elseif (is_array($value)) {
 						$returnValue = implode(', ', $value);
 						if (strlen($fkey) > 0)
 						{
 							$returnValue = $this->getArrayValueAsList($fkey, $returnValue);
 						}
-					}
-					elseif (is_array($opts) && array_is_assoc($opts))
-					{
+					} elseif (is_array($opts) && array_is_assoc($opts)) {
 						$returnValue = isset($opts[$value]) ? $opts[$value] : $value;
-					}
-					elseif (is_array($rfrc))
-					{
+					} elseif (is_array($rfrc)) {
 						$returnValue = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
-					}
-					else
-					{
+					} else {
 						$returnValue = $value;
 					}
 					return $returnValue;
@@ -136,18 +126,15 @@ class EfgExtendedInserttags extends Controller
 	/**
 	 * get all values of the given array
 	 */
-	private function getArrayValueAsList($foreignKey, $valueIds)
-	{
+	private function getArrayValueAsList($foreignKey, $valueIds) {
 		$foreignKey = explode('.', $foreignKey);
 		$table = $foreignKey[0];
 		$fieldname = $foreignKey[1];
-		if (strlen($table) > 0 && strlen($valueIds) > 0)
-		{
+		if (strlen($table) > 0 && strlen($valueIds) > 0) {
 			$values = $this->Database->prepare("SELECT " . $fieldname . " FROM " . $table . " WHERE id IN (" . $valueIds . ") ORDER BY name ASC")
 								->execute();
 			$list = array();
-			while ($values->next())
-			{
+			while ($values->next()) {
 				$list[] = $values->$fieldname;
 			}
 			return implode(", ", $list);
@@ -159,16 +146,14 @@ class EfgExtendedInserttags extends Controller
 	 * Return all possible form fields as array
 	 * @return array
 	 */
-	public function getAllFormFields()
-	{
+	public function getAllFormFields() {
 		$fields = array('id'=>'ID');
 
 		// Get all form fields which can be used
 		$objFields = $this->Database->prepare("SELECT name,label FROM tl_form_field WHERE pid=? ORDER BY name ASC")
 							->execute($this->Input->get('id'));
 
-		while ($objFields->next())
-		{
+		while ($objFields->next()) {
 			$name = $objFields->name;
 			$label = $objFields->label;
 

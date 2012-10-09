@@ -30,6 +30,6 @@
 /**
  * Define name and tooltip for preferences (inactive modules)
  */
-$GLOBALS['TL_LANG']['MOD']['EfgExtendedInserttags'] = array('Erweiterete EFG Inserttags', 'Stellt zusätzliche Inserttags zur Verfügung, für Daten die in EFG gespeichert werden.');
+$GLOBALS['TL_LANG']['MOD']['EfgExtendedInserttags'] = array('Erweiterete EFG Inserttags', 'Stellt zusÃ¤tzliche Inserttags zur VerfÃ¼gung, fÃ¼r Daten die in EFG gespeichert werden.');
 
 ?>
