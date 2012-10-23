@@ -15,10 +15,19 @@ Tracker
 
 https://github.com/cliffparnitzky/EfgExtendedInserttags/issues
 
+
+Compatibility
+-------------
+
+- min. version: Contao 2.9.5
+- max. version: Contao 2.11.6
+
+
 Configuration
 -------------
 
-Activate usaging extended insert tags for a form and define an insert tag key and the field that should be used to identify a record.
+Activate using extended insert tags for a form and define an insert tag key and the field that should be used to identify a record.
+
 
 Usage
 -----
