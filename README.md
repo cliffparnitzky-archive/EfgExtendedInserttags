@@ -23,6 +23,12 @@ Compatibility
 - max. version: Contao 2.11.6
 
 
+Dependency
+----------
+
+- This extension is dependent on the following extensions: [[efg]](http://contao.org/de/extension-list/view/efg.de.html)
+
+
 Configuration
 -------------
 
