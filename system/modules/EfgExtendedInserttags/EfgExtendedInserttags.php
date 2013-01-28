@@ -147,20 +147,29 @@ class EfgExtendedInserttags extends Controller
 	 * @return array
 	 */
 	public function getAllFormFields() {
+		$this->loadLanguageFile('tl_form_field');
+		
 		$fields = array('id'=>'ID');
 
 		// Get all form fields which can be used
-		$objFields = $this->Database->prepare("SELECT name,label FROM tl_form_field WHERE pid=? ORDER BY name ASC")
+		$obFormFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE pid=? ORDER BY label, name ASC")
 							->execute($this->Input->get('id'));
 
-		while ($objFields->next()) {
-			$name = $objFields->name;
-			$label = $objFields->label;
+		while ($obFormFields->next()) {
+			$strClass = $GLOBALS['TL_FFL'][$obFormFields->type];
 
-			if (strlen($name)) {
-				$label = strlen($label) ? $label.' ['.$name.']' : $name;
-				$fields[$name] = $label;
+			// Continue if the class is not defined
+			if (!$this->classFileExists($strClass)) {
+				continue;
 			}
+			
+			// Continue if the class is not an input submit
+			$widget = new $strClass;
+			if (!$widget->submitInput() && !$widget instanceof FormFileUpload) {
+				continue;
+			}
+			
+			$fields[$obFormFields->name] = ((strlen($obFormFields->label) > 0) ? $obFormFields->label . " [" . $GLOBALS['TL_LANG']['tl_form_field']['name'][0] . ": " . $obFormFields->name . " / " : $obFormFields->name . " [") . $GLOBALS['TL_LANG']['tl_form_field']['type'][0] . ": " . $GLOBALS['TL_LANG']['FFL'][$obFormFields->type][0] . "]";
 		}
 
 		return $fields;
