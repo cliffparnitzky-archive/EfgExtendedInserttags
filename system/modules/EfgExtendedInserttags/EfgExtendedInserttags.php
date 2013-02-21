@@ -50,7 +50,7 @@ class EfgExtendedInserttags extends Controller
 	public function replaceEfgExtendedInserttags($strTag)
 	{
 		$strTag = explode('::', $strTag);
-		if ($strTag[0] == 'efgext' && count($strTag) == 4 && strlen($strTag[1]) > 0 && strlen($strTag[2]) > 0 && strlen($strTag[3]) > 0) {
+		if ($strTag[0] == 'efgext' && count($strTag) >= 4 && strlen($strTag[1]) > 0 && strlen($strTag[2]) > 0 && strlen($strTag[3]) > 0) {
 			$key = $strTag[1];
 			$method = strtolower($strTag[2]) == 'post' ? 'post' : 'get';
 			$fieldname = $strTag[3];
@@ -75,25 +75,18 @@ class EfgExtendedInserttags extends Controller
 				if ($obRecord->numRows > 0) {
 					$value = $obRecord->value;
 					
-					$dca = 'fd_' . str_replace('-', '_', standardize($obForm->title));
+					$obField = $this->Database->prepare("SELECT * FROM tl_form_field WHERE pid = ? AND name = ?")
+													->limit(1)
+													->execute(array($obForm->id, $fieldname));
 					
-					if (strlen($obForm->formID)) {
-						$dca = 'fd_' . $obForm->formID;
-					}
-					
-					$this->loadDataContainer($dca);
-
-					if ($GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['inputType'] == 'password') {
+					if ($obField->type == 'password') {
 						// do not allow extracting a password
 						return "";
 					}
 					
-
 					$value = deserialize($value);
-					$rgxp = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['eval']['rgxp'];
-					$opts = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['options'];
-					$rfrc = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['reference'];
-					$fkey = $GLOBALS['TL_DCA']['tl_formdata']['fields'][$fieldname]['foreignKey'];
+					$rgxp = $obField->rgxp;
+					$options = deserialize($obField->options);
 
 					$returnValue = '';
 					if ($rgxp == 'date' || $rgxp == 'time' || $rgxp == 'datim') {
@@ -105,14 +98,13 @@ class EfgExtendedInserttags extends Controller
 						$returnValue = $this->parseDate($dateFormat, $value);
 					} elseif (is_array($value)) {
 						$returnValue = implode(', ', $value);
-						if (strlen($fkey) > 0)
-						{
-							$returnValue = $this->getArrayValueAsList($fkey, $returnValue);
+					} elseif (is_array($options)) {
+						$returnValue = $value;
+						foreach ($options as $option) {
+							if ($option['value'] == $value) {
+								$returnValue = $option['label'];
+							}
 						}
-					} elseif (is_array($opts) && array_is_assoc($opts)) {
-						$returnValue = isset($opts[$value]) ? $opts[$value] : $value;
-					} elseif (is_array($rfrc)) {
-						$returnValue = isset($rfrc[$value]) ? ((is_array($rfrc[$value])) ? $rfrc[$value][0] : $rfrc[$value]) : $value;
 					} else {
 						$returnValue = $value;
 					}
