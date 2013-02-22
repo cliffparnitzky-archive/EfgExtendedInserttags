@@ -67,6 +67,10 @@ class EfgExtendedInserttags extends Controller
 					$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = ?")
 									 ->limit(1)
 									 ->execute(array($fieldname, $idValue));
+				} elseif ($idField == "alias") {
+					$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT id FROM tl_formdata WHERE alias = ?)")
+									 ->limit(1)
+									 ->execute(array($fieldname, $idValue));
 				} else {
 					$obRecord = $this->Database->prepare("SELECT * FROM tl_formdata_details WHERE ff_name = ? AND pid = (SELECT fdd.pid FROM tl_formdata_details fdd JOIN tl_formdata fd ON fdd.pid = fd.id WHERE fdd.value = ? AND fdd.ff_name = ? AND fd.form = ?)")
 									 ->limit(1)
@@ -142,6 +146,7 @@ class EfgExtendedInserttags extends Controller
 		$this->loadLanguageFile('tl_form_field');
 		
 		$fields = array('id'=>'ID');
+		$fields = array('alias'=>'ALIAS');
 
 		// Get all form fields which can be used
 		$obFormFields = $this->Database->prepare("SELECT * FROM tl_form_field WHERE pid=? ORDER BY label, name ASC")
