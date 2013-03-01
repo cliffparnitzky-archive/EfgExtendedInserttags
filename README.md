@@ -1,5 +1,5 @@
-Contao EFG Extended Inserttags Extension
-========================================
+Contao Extension: EfgExtendedInserttags
+=======================================
 
 Provides additional insert tags for efg stored forms. 
 
@@ -20,7 +20,7 @@ Compatibility
 -------------
 
 - min. version: Contao 2.9.5
-- max. version: Contao 2.11.6
+- max. version: Contao 2.11.x
 
 
 Dependency
